@@ -11,8 +11,14 @@ public class AppDbContext : DbContext
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
+
+    public DbSet<ItemCardapio> ItensCardapio { get; set; }
+    public DbSet<Pedido> Pedidos { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         // Preenchendo banco com cardápio
         modelBuilder.Entity<ItemCardapio>().HasData(
             new ItemCardapio { Id = Guid.Parse("d28888e9-2ba9-473a-a40f-e38cb54f9b35"), Nome = "X Burger", Preco = 5.00m, Categoria = ItemCategoria.Sanduiche },
