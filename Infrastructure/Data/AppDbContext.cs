@@ -18,6 +18,10 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Pedido>()
+        .HasMany(p => p.Itens)
+        .WithMany(i => i.Pedidos)
+        .UsingEntity(j => j.ToTable("PedidoItens"));
 
         // Preenchendo banco com cardápio
         modelBuilder.Entity<ItemCardapio>().HasData(

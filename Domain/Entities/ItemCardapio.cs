@@ -11,4 +11,5 @@ public class ItemCardapio
     public string Nome { get; set; } = string.Empty;
     public decimal Preco { get; set; }
     public ItemCategoria Categoria { get; set; }
+    public List<Pedido> Pedidos { get; set; } = new();
 }

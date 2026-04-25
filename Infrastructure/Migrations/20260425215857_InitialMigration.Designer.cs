@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260424221616_InicialCompleta")]
-    partial class InicialCompleta
+    [Migration("20260425215857_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,15 +33,10 @@ namespace Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("PedidoId")
-                        .HasColumnType("TEXT");
-
                     b.Property<decimal>("Preco")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PedidoId");
 
                     b.ToTable("ItensCardapio");
 
@@ -89,6 +84,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Cancelado")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("TEXT");
 
@@ -106,16 +104,34 @@ namespace Infrastructure.Migrations
                     b.ToTable("Pedidos");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ItemCardapio", b =>
+            modelBuilder.Entity("ItemCardapioPedido", b =>
                 {
-                    b.HasOne("Domain.Entities.Pedido", null)
-                        .WithMany("Itens")
-                        .HasForeignKey("PedidoId");
+                    b.Property<Guid>("ItensId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("PedidosId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ItensId", "PedidosId");
+
+                    b.HasIndex("PedidosId");
+
+                    b.ToTable("PedidoItens", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Pedido", b =>
+            modelBuilder.Entity("ItemCardapioPedido", b =>
                 {
-                    b.Navigation("Itens");
+                    b.HasOne("Domain.Entities.ItemCardapio", null)
+                        .WithMany()
+                        .HasForeignKey("ItensId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Pedido", null)
+                        .WithMany()
+                        .HasForeignKey("PedidosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

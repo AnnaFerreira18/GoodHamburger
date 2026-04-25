@@ -13,4 +13,5 @@ public class Pedido
     public decimal Subtotal { get; set; }
     public decimal ValorDesconto { get; set; }
     public decimal TotalFinal { get; set; }
+    public bool Cancelado { get; set; } = false;
 }
