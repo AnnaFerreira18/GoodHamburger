@@ -38,6 +38,45 @@ namespace Tests.Services
         }
 
         [Fact]
+        public void CalcularTotais_DeveAplicar15PorcentoDesconto_QuandoTiverSanduicheERefrigerante()
+        {
+            var itens = new List<ItemCardapio>
+            {
+                new ItemCardapio { Categoria = ItemCategoria.Sanduiche, Preco = 5.00m },
+                new ItemCardapio { Categoria = ItemCategoria.Refrigerante, Preco = 2.50m }
+            };
+            // Subtotal: 7.50 | 15% = 1.125 
+            var resultado = _pedidoService.CalcularTotais(itens);
+            Assert.Equal(1.12m, Math.Round(resultado.ValorDesconto, 2));
+        }
+
+        [Fact]
+        public void CalcularTotais_DeveAplicar10PorcentoDesconto_QuandoTiverSanduicheEBatata()
+        {
+            var itens = new List<ItemCardapio>
+            {
+                new ItemCardapio { Categoria = ItemCategoria.Sanduiche, Preco = 5.00m },
+                new ItemCardapio { Categoria = ItemCategoria.BatataFrita, Preco = 2.00m }
+            };
+            // Subtotal: 7.00 | 10% = 0.70
+            var resultado = _pedidoService.CalcularTotais(itens);
+            Assert.Equal(0.70m, resultado.ValorDesconto);
+        }
+
+        [Fact]
+        public void CalcularTotais_NaoDeveAplicarDesconto_QuandoNaoTiverSanduiche()
+        {
+            var itens = new List<ItemCardapio>
+            {
+                new ItemCardapio { Categoria = ItemCategoria.BatataFrita, Preco = 2.00m },
+                new ItemCardapio { Categoria = ItemCategoria.Refrigerante, Preco = 2.50m }
+            };
+            var resultado = _pedidoService.CalcularTotais(itens);
+            Assert.Equal(0m, resultado.ValorDesconto);
+            Assert.Equal(4.50m, resultado.TotalFinal);
+        }
+
+        [Fact]
         public void ValidarItensPedido_DeveLancarExcecao_QuandoItensEstiveremDuplicados()
         {
             var itemId = Guid.NewGuid();
@@ -52,6 +91,19 @@ namespace Tests.Services
                 _pedidoService.ValidarItensPedido(request, itensDoBanco));
 
             Assert.Equal("Itens duplicados não são permitidos no mesmo pedido.", excecao.Message);
+        }
+
+        [Fact]
+        public void ValidarItensPedido_DeveLancarExcecao_QuandoTiverDoisSanduichesDiferentes()
+        {
+            var request = new CriarPedidoRequest { ItensIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() } };
+            var itensDoBanco = new List<ItemCardapio>
+            {
+                new ItemCardapio { Categoria = ItemCategoria.Sanduiche, Nome = "X-Burger" },
+                new ItemCardapio { Categoria = ItemCategoria.Sanduiche, Nome = "X-Egg" }
+            };
+
+            Assert.Throws<ArgumentException>(() => _pedidoService.ValidarItensPedido(request, itensDoBanco));
         }
     }
 }

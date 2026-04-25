@@ -1,4 +1,5 @@
 ﻿using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
 using System;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace Application.Services;
 
-public class PedidoService
+public class PedidoService : IPedidoService
 {
     public void ValidarItensPedido(CriarPedidoRequest request, List<ItemCardapio> itensDoBanco)
     {
